@@ -16,7 +16,7 @@ angular.module('emission', ['ionic',
   'pascalprecht.translate'])
 
 .run(function($ionicPlatform, $rootScope, $http, Logger,
-    CustomURLScheme, ReferralHandler, UpdateCheck) {
+    CustomURLScheme, ReferralHandler, UpdateCheck, DynamicConfig) {
   console.log("Starting run");
   // alert("Starting run");
   // BEGIN: Global listeners, no need to wait for the platform
@@ -32,6 +32,8 @@ angular.module('emission', ['ionic',
       StartPrefs.loadWithPrefs();
     } else if (urlComponents.route == 'change_client') {
       UpdateCheck.handleClientChangeURL(urlComponents);
+    } else if (urlComponents.route == 'join_study') {
+      DynamicConfig.initByUser(urlComponents);
     }
   });
   // END: Global listeners
