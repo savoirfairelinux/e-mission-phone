@@ -41,10 +41,19 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
 
     var readConfigFromServer = function(label, source) {
         Logger.log("Received request to switch to "+label+" from "+source);
-        if (source != "github") {
+        if (source === "github") {
+            return readConfigFromGitHub(label);
+        }
+        else if (source === "mamobilite") {
+            return readConfigFromMamobilite(label);
+        }
+        else {
             Logger.displayError("Invalid source", "Configurations from "+source+" not supported, please contact the app developer");
             return;
         };
+    }
+
+    var readConfigFromGitHub = function(label) {
         // The URL prefix from which config files will be downloaded and read.
         // Change this if you supply your own config files. TODO: on merge, change this from sebastianbarry's branch to the master e-mission branch
         const downloadURL = "https://raw.githubusercontent.com/sebastianbarry/nrel-openpath-deploy-configs/surveys-info-and-surveys-data/configs/"+label+".nrel-op.json"
@@ -58,6 +67,43 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
                 +" for "+parsedConfig.intro.translated_text.en.deployment_name
                 +" and data collection URL "+connectionURL);
             return parsedConfig;
+        });
+    }
+
+    var readConfigFromMamobilite = function(label) {
+        const downloadURL = "https://www.mamobilite.fabmobqc.ca/api/projects/"+label;
+        Logger.log("Downloading data from "+downloadURL);
+
+        return new Promise(function(resolve, reject) {
+            const options = {
+                method: 'get',
+                responseType: 'json'
+            }
+            cordova.plugin.http.sendRequest(downloadURL, options,
+            function(response) {
+                Logger.log("Successfully found the "+downloadURL+", result is " + JSON.stringify(response.data).substring(0,10));
+                const config = {
+                    "connectUrl": response.data.server_url,
+                    ...response.data,
+                    "aggregate_call_auth": "no_auth",
+                    "android": {
+                        "auth": {
+                            "method": "prompted-auth",
+                            "clientID": "ignored"
+                        }
+                    },
+                    "ios": {
+                        "auth": {
+                            "method": "prompted-auth",
+                            "clientID": "ignored"
+                        }
+                    },
+                };
+                _fillStudyName(config);
+                resolve(config);
+            }, function(error) {
+                reject(error);
+            });
         });
     }
 
@@ -86,7 +132,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
      */
     var loadNewConfig = function (urlComponents, thenGoToIntro, existingVersion=null) {
         return readConfigFromServer(urlComponents.label, urlComponents.source).then((downloadedConfig) => {
-            if (downloadedConfig.version == existingVersion) {
+            if (downloadedConfig.version === existingVersion) {
                 Logger.log("UI_CONFIG: Not updating config because version is the same");
                 return Promise.resolve(false);
             }

@@ -8,7 +8,28 @@ angular.module('emission.join.ctrl', ['emission.splash.updatecheck',
                                         //'emission.survey.multilabel.posttrip.prompt'
                                       ])
 .controller('JoinCtrl', function($scope, $state, $interval, $rootScope, 
-    $ionicPlatform, $ionicPopup, $ionicPopover) {
+    $ionicPlatform, $ionicPopup, $ionicPopover, Logger) {
+    
+    $scope.studies = [];
+
+    const options = {
+      method: 'get',
+      responseType: 'json'
+    }
+
+    cordova.plugin.http.sendRequest("https://www.mamobilite.fabmobqc.ca/api/projects/", options,
+    function(response) {
+      $scope.studies = response.data;
+    }, function(error) {
+      Logger.log("Failed to fetch studies " + JSON.stringify(error));
+    });
+
+    $scope.selectStudy = function(study) {
+      // nrelopenpath://join_study?label=dev-emulator-study&source=github
+      const url = `nrelopenpath://join_study?label=${study.id}&source=mamobilite`
+      handleOpenURL(url);
+    }
+    
     console.log('JoinCtrl invoked');
         // alert("attach debugger!");
         // PushNotify.startupInit();
