@@ -11,7 +11,8 @@ angular.module('emission', ['ionic',
     'emission.controllers','emission.services', 'emission.plugin.logger',
     'emission.splash.customURLScheme', 'emission.splash.referral',
     'emission.splash.updatecheck', 'emission.services.email',
-  'emission.intro', 'emission.main',
+  'emission.intro', 'emission.main', 'emission.config.dynamic',
+  'emission.join.ctrl',
   'pascalprecht.translate'])
 
 .run(function($ionicPlatform, $rootScope, $http, Logger,
@@ -90,6 +91,17 @@ angular.module('emission', ['ionic',
         url: '/splash',
         templateUrl: 'templates/splash/splash.html',
         controller: 'SplashCtrl'
+  })
+
+  // add the join screen to the list of initially defined states
+  // we can't put it in intro since it comes before it
+  // we can't put it in main because it is also a temporary screen that only
+  // shows up when we have no config.
+  // so we put it in here
+  .state('root.join', {
+    url: '/join',
+    templateUrl: 'templates/join/request_join.html',
+    controller: 'JoinCtrl'
   })
 
   // setup an abstract state for the root. Only children of this can be loaded
