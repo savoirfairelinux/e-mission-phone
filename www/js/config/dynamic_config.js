@@ -194,7 +194,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
         window.cordova.plugins.BEMJWTAuth.getUserEmail().then(function(response) {
             console.log("Running hack code to add the study as a prefix to an existing token if needed");
             if (!response.startsWith("nrelop_")) {
-                const newToken = "nrelop_"+config.name+"_"+response;
+                const newToken = response;//"nrelop_"+config.name+"_"+response;
                 Logger.log("Found old style token, after prepending nrelop_"+config.name+" new token is "+newToken);
                 window.cordova.plugins.BEMJWTAuth.setPromptedAuthToken(newToken);
             }

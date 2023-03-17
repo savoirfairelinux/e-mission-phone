@@ -111,6 +111,7 @@ angular
           $scope.consentFile = allIntroFilePaths[1];
           $scope.explainFile = allIntroFilePaths[2];
           $scope.loginFile = allIntroFilePaths[3];
+          $scope.joinFile = "templates/intro/request_join.html";
         });
       });
 
@@ -161,7 +162,7 @@ angular
         StartPrefs.markConsented().then(function (response) {
           $ionicHistory.clearHistory();
           if ($state.is("root.intro")) {
-            $scope.loginNew();
+            $scope.next();
           } else {
             StartPrefs.loadPreferredScreen();
           }
@@ -285,5 +286,26 @@ angular
       $ionicPlatform.ready().then(function () {
         $scope.setupPermissionText();
       });
+
+      
+      $scope.studies = [];
+
+      const options = {
+        method: 'get',
+        responseType: 'json'
+      }
+      
+      cordova.plugin.http.sendRequest("https://www.mamobilite.fabmobqc.ca/api/projects/", options,
+      function(response) {
+        $scope.studies = response.data;
+      }, function(error) {
+        Logger.log("Failed to fetch studies " + JSON.stringify(error));
+      });
+
+      $scope.selectStudy = function(study) {
+        const url = `nrelopenpath://join_study?label=${study.id}&source=mamobilite`
+        handleOpenURL(url);
+        $scope.loginNew();
+      }
     }
-  );
+);
