@@ -228,6 +228,43 @@ angular
         $scope.login($scope.randomToken);
       };
 
+      $scope.typeEmail = function() {
+        $scope.data = {};
+        const tokenPopup = $ionicPopup.show({
+            template: '<input type="String" ng-model="data.existing_token">',
+            title: $translate.instant('intro.join.enter-email') + '<br>',
+            scope: $scope,
+            buttons: [
+              {
+                text: '<b>' + $translate.instant('intro.join.confirm') + '</b>',
+                type: 'button-positive',
+                onTap: function(e) {
+                  if (!$scope.data.existing_token) {
+                    //don't allow the user to close unless he enters a username
+                    e.preventDefault();
+                  } else {
+                    return $scope.data.existing_token;
+                  }
+                }
+              },{
+                text: '<b>' + $translate.instant('intro.join.cancel') + '</b>',
+                type: 'button-stable',
+                onTap: function(e) {
+                  return null;
+                }
+              }
+            ]
+        });
+        tokenPopup.then(function(token) {
+            if (token != null) {
+                $scope.alreadySaved = false;
+                $scope.login(token);
+            }
+        }).catch(function(err) {
+            $scope.alertError(err);
+        });
+      };
+
       $scope.login = function (token) {
         window.cordova.plugins.BEMJWTAuth.setPromptedAuthToken(token).then(
           function (userEmail) {
@@ -286,9 +323,10 @@ angular
       $ionicPlatform.ready().then(function () {
         $scope.setupPermissionText();
       });
-
       
+
       $scope.studies = [];
+      $scope.selectedStudy = null;
 
       const options = {
         method: 'get',
@@ -303,9 +341,21 @@ angular
       });
 
       $scope.selectStudy = function(study) {
-        const url = `nrelopenpath://join_study?label=${study.id}&source=mamobilite`
+        $scope.selectedStudy = study;
+      }
+
+      $scope.confirmStudy = function() {
+        const studyId = $scope.selectedStudy.id;
+        const url = `nrelopenpath://join_study?label=${studyId}&source=mamobilite`;
+
         handleOpenURL(url);
-        $scope.loginNew();
+
+        if (studyId === 2 /* hardcoded study, should be instead a parameter in the config */) {
+          $scope.typeEmail();
+        }
+        else {
+          $scope.loginNew();
+        }
       }
     }
 );

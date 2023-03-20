@@ -1,10 +1,18 @@
-<ion-view translate-namespace="join">
+<ion-view translate-namespace="intro">
     <ion-content>
+        <center><h3 translate>{{'.join.what-project'}}</h1></center>
         <center><ion-spinner ng-if="!studies.length"></ion-spinner></center>
         <ion-list>
             <ion-item ng-repeat="study in studies" ng-click="selectStudy(study)">
                 {{study.name_fr}}
             </ion-item>
         </ion-list>
+        <button 
+            class="button button-block button-positive button-outline"
+            ng-click="confirmStudy()"
+            ng-disabled="!selectedStudy"
+        >
+            <span translate>{{'.join.confirm'}}</span>
+        </button>
     </ion-content>
 </ion-view>
