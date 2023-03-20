@@ -347,6 +347,12 @@
             "locationPermExplanation-android-gte-11": "veuillez sélectionner 'Autoriser tout le temps' pour les autorisations de localisation sur la page de l'application",
             "locationPermExplanation-ios-lt-13": "veuillez sélectionner 'Toujours autoriser'. Cela nous permet de comprendre votre voyage même lorsque vous n'utilisez pas activement l'application",
             "locationPermExplanation-ios-gte-13": "veuillez sélectionner 'toujours' et 'précis' dans la page des paramètres de l'application et revenir ici pour continuer"
+        },
+        "join": {
+            "cancel": "Annuler",
+            "confirm": "Confirmer",
+            "enter-email": "Entrez votre adresse électrique",
+            "what-project": "Dans quel projet participez-vous?"
         }
     }
 }
