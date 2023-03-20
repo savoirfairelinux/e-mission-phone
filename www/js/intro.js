@@ -255,10 +255,11 @@ angular
               }
             ]
         });
-        tokenPopup.then(function(token) {
-            if (token != null) {
+        tokenPopup.then(function(email) {
+            if (email != null) {
+                $scope.email = email;
                 $scope.alreadySaved = false;
-                $scope.login(token);
+                $scope.loginNew();
             }
         }).catch(function(err) {
             $scope.alertError(err);
@@ -281,8 +282,14 @@ angular
                       client: retVal,
                     });
                   });
-                  $scope.startSurvey();
-                  $scope.finish();
+                  const studyId = $scope.selectedStudy.id;
+                  if (studyId !== 2 /* hardcoded study, should be instead a parameter in the config */) {
+                    $scope.startSurvey();
+                  }
+                  $scope.saveUserProfileOnServer()
+                  .then(() => {
+                    $scope.finish();
+                  });
                 },
                 function (errorResult) {
                   $scope.alertError("User registration error", errorResult);
@@ -320,11 +327,43 @@ angular
         StartPrefs.loadPreferredScreen();
       };
 
+      $scope.saveUserProfileOnServer = function() {
+        return new Promise(function(resolve, reject) {
+
+          const options = {
+            method: 'post',
+            responseType: 'json'
+          }
+  
+          return CommHelper.getUser().then(function (userProfile) {
+  
+            options.data = {
+              uuid: userProfile.user_id["$uuid"],
+              project: $scope.selectedStudy.id,
+              email: $scope.email || "no@email.given", // TO FIX: The API should handle empty email
+            }
+  
+            cordova.plugin.http.sendRequest(
+              "https://mamobilite.fabmobqc.ca/api/userprofile/",
+              options,
+              function() {
+                resolve();
+              },
+              function(error) {
+                Logger.log("Failed to add userProfile " + JSON.stringify(error));
+                reject();
+              }
+            );
+          });
+        });
+      };
+
       $ionicPlatform.ready().then(function () {
         $scope.setupPermissionText();
       });
       
 
+      $scope.email = null;
       $scope.studies = [];
       $scope.selectedStudy = null;
 
