@@ -283,7 +283,7 @@ angular
                     });
                   });
                   const studyId = $scope.selectedStudy.id;
-                  if (studyId !== 2 /* hardcoded study, should be instead a parameter in the config */) {
+                  if (!$scope.selectedStudy.user_email_mandatory) {
                     $scope.startSurvey();
                   }
                   $scope.saveUserProfileOnServer()
@@ -389,7 +389,7 @@ angular
 
         handleOpenURL(url);
 
-        if (studyId === 2 /* hardcoded study, should be instead a parameter in the config */) {
+        if ($scope.selectedStudy.user_email_mandatory) {
           $scope.typeEmail();
         }
         else {
