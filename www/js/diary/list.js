@@ -630,7 +630,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.survey = null;
 
     $scope.setSurvey = function() {
-      if(!$scope.config) {
+      if(!$scope.config || !Timeline.data.currDay) {
         return;
       }
 
@@ -651,10 +651,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       // Check if it is too soon to display the survey
       const sameDay = currentMoment.diff(diaryMoment, "days") === 0;
       if (sameDay) {
-        const [hour, minute, second] = $scope.survey.display_time.split(':');
-        if (
-          !(currentMoment.hour() >= hour && currentMoment.minute() >= minute&& currentMoment.second() >= second)
-        ) {
+        if (currentMoment.tz($scope.config.timezone).format("HH:mm:ss") < $scope.survey.display_time) {
           $scope.survey = null;
         }
       }
