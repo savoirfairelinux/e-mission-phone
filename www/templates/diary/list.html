@@ -26,9 +26,11 @@
       </button>
     </div>
 
-    <button ng-if="!!survey" ng-click="startSurvey()">
-      Link to daily survey
-    </button>
+    <div style="text-align:center;">
+      <button class="daily-survey-button" ng-if="!!survey" ng-click="startSurvey()">
+        <span translate>{{'.link-to-daily-survey'}}</span>
+      </button>
+    </div>
 
 		<ion-list>
       <ion-nav-view ></ion-nav-view>

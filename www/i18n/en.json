@@ -153,7 +153,8 @@
         "select-mode-scroll": "Mode (👇 for more)",
         "select-replaced-mode-scroll": "Replaces (👇 for more)",
         "select-purpose-scroll": "Purpose (👇 for more)",
-        "list-pick-a-date": "Pick a date"
+        "list-pick-a-date": "Pick a date",
+        "link-to-daily-survey": "Link to daily survey"
     },
     "modes": {
         "walk": "Walk",

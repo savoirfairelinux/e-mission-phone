@@ -558,6 +558,19 @@ ion-header-bar {
   color: #303030;
 }
 
+.daily-survey-button {
+  padding: 5px 30px;
+  border: 2px solid #C00000;
+  border-radius: 50px;
+  color: #C00000;
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: bold;
+  font-size: 12px;
+  text-align: center;
+  background-color: #ffffff;
+}
+
 .date-picker-button {
   width: 104px;
   height: 40px;
