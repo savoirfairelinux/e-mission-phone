@@ -15,7 +15,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                       'emission.tripconfirm.services',
                                       'emission.services',
                                       'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore',
-    'emission.plugin.logger'
+    'emission.plugin.logger',
+    'emission.config.dynamic',
   ])
 
 .controller("DiaryListCtrl", function($window, $scope, $rootScope, $ionicPlatform, $state,
@@ -24,7 +25,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                     $ionicActionSheet,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
-    Config, PostTripManualMarker, ConfirmHelper, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $translate) {
+    Config, PostTripManualMarker, ConfirmHelper, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $translate, DynamicConfig, CommHelper, SurveyLaunch) {
   console.log("controller DiaryListCtrl called");
   // Add option
 
@@ -225,6 +226,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     }
 
     $scope.$on(Timeline.UPDATE_DONE, function(event, args) {
+      $scope.setSurvey();
       console.log("Got timeline update done event with args "+JSON.stringify(args));
       $scope.$apply(function() {
           $scope.data = Timeline.data;
@@ -319,6 +321,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.refresh = function() {
       if ($ionicScrollDelegate.getScrollPosition().top < 20) {
        readAndUpdateForDay(Timeline.data.currDay);
+       $scope.setSurvey();
        $scope.$broadcast('invalidateSize');
       }
     };
@@ -621,5 +624,62 @@ angular.module('emission.main.diary.list',['ui-leaflet',
           }
         }
       });
+    });
+
+    $scope.config = null;
+    $scope.survey = null;
+
+    $scope.setSurvey = function() {
+      if(!$scope.config) {
+        return;
+      }
+
+      const currentMoment = new moment();
+      const diaryMoment = moment(Timeline.data.currDay);
+
+      if (diaryMoment.isAfter(currentMoment)) {
+        $scope.survey = null;
+        return;
+      }
+
+      // Find the survey for the day of the diary
+      const subscriptionMoment = moment($scope.config.creationTime);
+      const dayOfStudy = diaryMoment.diff(subscriptionMoment, "days") + 1;
+      const dailyForms = $scope.config.daily_forms;
+      $scope.survey = dailyForms.find(({is_active, day}) => is_active && day === dayOfStudy);
+
+      // Check if it is too soon to display the survey
+      const sameDay = currentMoment.diff(diaryMoment, "days") === 0;
+      if (sameDay) {
+        const [hour, minute, second] = $scope.survey.display_time.split(':');
+        if (
+          !(currentMoment.hour() >= hour && currentMoment.minute() >= minute&& currentMoment.second() >= second)
+        ) {
+          $scope.survey = null;
+        }
+      }
+    }
+
+    $scope.startSurvey = function () {
+      if (!$scope.survey) {
+        return;
+      }
+
+      const appLanguage = $translate.use() || 'en';
+      const surveyUrl = $scope.survey.urls.find(({language}) => language === appLanguage) || $scope.survey.urls[0];
+
+      if (!surveyUrl) {
+        return;
+      }
+
+      CommHelper.getUser().then(function (userProfile) {
+        const uuid = userProfile.user_id["$uuid"];
+        SurveyLaunch.startSurvey(surveyUrl.url + `?uuid=${uuid}`);
+      });
+    };
+
+    DynamicConfig.loadSavedConfig().then((config) => {
+      $scope.config = config;
+      $scope.setSurvey();
     });
 });
