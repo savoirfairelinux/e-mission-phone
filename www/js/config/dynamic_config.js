@@ -98,6 +98,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
                             "clientID": "ignored"
                         }
                     },
+                    "creationTime": new Date(), // Is it really related to the config? Not sure. At least it is convenient.
                 };
                 _fillStudyName(config);
                 resolve(config);
@@ -107,7 +108,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
         });
     }
 
-    var loadSavedConfig = function() {
+    dc.loadSavedConfig = function() {
         const nativePlugin = $window.cordova.plugins.BEMUserCache;
         return nativePlugin.getDocument(CONFIG_PHONE_UI, false)
             .then((savedConfig) => {
@@ -203,7 +204,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
 
     dc.initByUser = function(urlComponents) {
         const newStudyLabel = urlComponents.label;
-        loadSavedConfig().then((savedConfig) => {
+        dc.loadSavedConfig().then((savedConfig) => {
             if(savedConfig && angular.equals(savedConfig.joined.label, urlComponents)) {
                 Logger.log("UI_CONFIG: existing label " + JSON.stringify(savedConfig.label) +
                     " and new one " + JSON.stringify(urlComponents), " are the same, skipping download");
@@ -221,7 +222,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
         });
     };
     dc.initAtLaunch = function () {
-        loadSavedConfig().then((existingConfig) => {
+        dc.loadSavedConfig().then((existingConfig) => {
             if (!existingConfig) {
                 return Logger.log("UI_CONFIG: No existing config, skipping");
             }

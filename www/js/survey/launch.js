@@ -177,6 +177,10 @@ angular.module('emission.survey.launch', ['emission.services',
       });
     }
 
+    surveylaunch.startSurvey = function(url) {
+      $window.cordova.InAppBrowser.open(url, '_blank', surveylaunch.options);
+    }
+
     surveylaunch.init = function() {
       $rootScope.$on('cloud:push:notification', function(event, data) {
         Logger.log("data = "+JSON.stringify(data));
