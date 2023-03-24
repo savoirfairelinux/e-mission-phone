@@ -352,7 +352,8 @@
         "join": {
             "cancel": "Annuler",
             "confirm": "Confirmer",
-            "enter-email": "Entrez votre adresse électrique",
+            "enter-email": "Entrez votre adresse électronique",
+            "repeat-email": "Répétez votre adresse électronique",
             "what-project": "Dans quel projet participez-vous?"
         }
     }

@@ -230,10 +230,21 @@ angular
         $scope.login($scope.randomToken);
       };
 
-      $scope.typeEmail = function() {
+
+      const emailRegex = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/
+
+      $scope.getUserEmail = function() {
         $scope.data = {};
         const tokenPopup = $ionicPopup.show({
-            template: '<input type="String" ng-model="data.existing_token">',
+            template: `
+              <input type="email" ng-model="data.email">
+              <br>
+              <label>
+              ${$translate.instant('intro.join.repeat-email')}
+              </label>
+              <br>
+              <input type="email" ng-model="data.repeatEmail">
+            `,
             title: $translate.instant('intro.join.enter-email') + '<br>',
             scope: $scope,
             buttons: [
@@ -241,11 +252,15 @@ angular
                 text: '<b>' + $translate.instant('intro.join.confirm') + '</b>',
                 type: 'button-positive',
                 onTap: function(e) {
-                  if (!$scope.data.existing_token) {
+                  if (
+                    $scope.data.email != $scope.data.repeatEmail
+                    ||
+                    !emailRegex.test($scope.data.email)
+                  ) {
                     //don't allow the user to close unless he enters a username
                     e.preventDefault();
                   } else {
-                    return $scope.data.existing_token;
+                    return $scope.data.email;
                   }
                 }
               },{
@@ -284,7 +299,6 @@ angular
                       client: retVal,
                     });
                   });
-                  const studyId = $scope.selectedStudy.id;
                   if (!$scope.selectedStudy.user_email_mandatory) {
                     $scope.startSurvey();
                   }
@@ -391,7 +405,7 @@ angular
         DynamicConfig.loadNewConfig(downloadURL)
         .then(() => {
           if ($scope.selectedStudy.user_email_mandatory) {
-            $scope.typeEmail();
+            $scope.getUserEmail();
           }
           else {
             $scope.loginNew();
