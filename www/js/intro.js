@@ -6,6 +6,7 @@ angular
     "emission.splash.updatecheck",
     'emission.appstatus.permissioncheck',
     "emission.i18n.utils",
+    'emission.config.dynamic',
     "ionic-toast",
   ])
 
@@ -42,7 +43,8 @@ angular
       SurveyLaunch,
       UpdateCheck,
       $translate,
-      i18nUtils
+      i18nUtils,
+      DynamicConfig,
     ) {
       $scope.setupPermissionText = function () {
         $scope.platform = $window.device.platform;
@@ -384,17 +386,17 @@ angular
       }
 
       $scope.confirmStudy = function() {
-        const studyId = $scope.selectedStudy.id;
-        const url = `nrelopenpath://join_study?label=${studyId}&source=mamobilite`;
 
-        handleOpenURL(url);
-
-        if ($scope.selectedStudy.user_email_mandatory) {
-          $scope.typeEmail();
-        }
-        else {
-          $scope.loginNew();
-        }
+        const downloadURL = "https://www.mamobilite.fabmobqc.ca/api/projects/"+$scope.selectedStudy.id;
+        DynamicConfig.loadNewConfig(downloadURL)
+        .then(() => {
+          if ($scope.selectedStudy.user_email_mandatory) {
+            $scope.typeEmail();
+          }
+          else {
+            $scope.loginNew();
+          }
+        })
       }
     }
 );
