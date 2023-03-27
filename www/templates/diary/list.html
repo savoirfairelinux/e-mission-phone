@@ -116,11 +116,14 @@
               <div> <!-- container to keep buttons together -->
                 <div ng-repeat="input in userInputDetails" ng-attr-id="{{ 'userinput' + input.name }}">
                   <button class="diary-button" ng-click ="openPopover($event, tripgj, input.name)">
-                    <span ng-if="tripgj.userInput[input.name]" translate>
-                      {{tripgj.userInput[input.name].text}}
-                    </span>
-                    <span ng-if="!tripgj.userInput[input.name]" translate>
-                      {{input.choosetext}}
+                    <span translate>
+                      {{
+                        tripgj.userInput[input.name].texts[currentLanguage]
+                        ||
+                        tripgj.userInput[input.name].texts["en"]
+                        ||
+                        input.choosetext
+                      }}
                     </span>
                   </button>
                 </div>
