@@ -644,7 +644,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
 
       // Find the survey for the day of the diary
       const subscriptionMoment = moment($scope.config.creationTime);
-      const dayOfStudy = diaryMoment.diff(subscriptionMoment, "days") + 1;
+      const dayOfStudy = diaryMoment.diff(subscriptionMoment, "days");
       const dailyForms = $scope.config.daily_forms;
       $scope.survey = dailyForms.find(({is_active, day}) => is_active && day === dayOfStudy);
 
