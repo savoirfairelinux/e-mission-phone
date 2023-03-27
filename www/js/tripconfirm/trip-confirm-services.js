@@ -1,5 +1,5 @@
-angular.module('emission.tripconfirm.services', ['ionic', 'emission.i18n.utils', "emission.plugin.logger"])
-.factory("ConfirmHelper", function($http, $ionicPopup, $translate, i18nUtils, Logger) {
+angular.module('emission.tripconfirm.services', ['ionic', 'emission.i18n.utils', "emission.plugin.logger", "emission.config.dynamic"])
+.factory("ConfirmHelper", function($http, $ionicPopup, $translate, i18nUtils, Logger, DynamicConfig) {
     var ch = {};
     ch.INPUTS = ["MODE", "PURPOSE"]
     ch.inputDetails = {
@@ -9,6 +9,7 @@ angular.module('emission.tripconfirm.services', ['ionic', 'emission.i18n.utils',
             width: "col-50",
             key: "manual/mode_confirm",
             otherVals: {},
+            options: [],
         },
         "PURPOSE": {
             labeltext: $translate.instant(".purpose"),
@@ -16,16 +17,8 @@ angular.module('emission.tripconfirm.services', ['ionic', 'emission.i18n.utils',
             width: "col-50",
             key: "manual/purpose_confirm",
             otherVals: {},
+            options: [],
         }
-    }
-
-    var fillInOptions = function(confirmConfig) {
-        if(confirmConfig.data.length == 0) {
-            throw "blank string instead of missing file on dynamically served app";
-        }
-        ch.INPUTS.forEach(function(i) {
-            ch.inputDetails[i].options = confirmConfig.data[i]
-        });
     }
 
     /*
@@ -45,22 +38,21 @@ angular.module('emission.tripconfirm.services', ['ionic', 'emission.i18n.utils',
     }
 
     var loadAndPopulateOptions = function () {
-        return i18nUtils.geti18nFileName("json/", "trip_confirm_options", ".json")
-            .then((optionFileName) => {
-                console.log("Final option file = "+optionFileName);
-                return $http.get(optionFileName)
-                    .then(fillInOptions)
-                    .catch(function(err) {
-                       // no prompt here since we have a fallback
-                       console.log("error "+JSON.stringify(err)+" while reading confirm options, reverting to defaults");
-                       return $http.get("json/trip_confirm_options.json.sample")
-                        .then(fillInOptions)
-                        .catch(function(err) {
-                           // prompt here since we don't have a fallback
-                           Logger.displayError("Error while reading default confirm options", err);
-                        });
-                    });
-            });
+        
+        const convertToOptions = (modesOrPurposes) => (
+            modesOrPurposes.map((modeOrPurpose) => ({
+                value: modeOrPurpose.label,
+                texts: modeOrPurpose.texts.reduce((previous, current) => {
+                    previous[current.language] = current.value;
+                    return previous;
+                }, {})
+            }))
+        );
+        
+        return DynamicConfig.loadSavedConfig().then((config) => {
+            ch.inputDetails["MODE"].options = convertToOptions(config.modes);
+            ch.inputDetails["PURPOSE"].options = convertToOptions(config.purposes);
+        });
     }
 
     ch.getOptionsAndMaps = function(inputType) {
@@ -80,8 +72,7 @@ angular.module('emission.tripconfirm.services', ['ionic', 'emission.i18n.utils',
      * and not have to worry about when the data is available.
      */
     ch.getOptions = function(inputType) {
-        if (!angular.isDefined(ch.inputDetails[inputType].options)) {
-            var lang = $translate.use();
+        if (ch.inputDetails[inputType].options.length === 0) {
             return loadAndPopulateOptions()
                 .then(function () { 
                     return ch.inputDetails[inputType].options;

@@ -355,6 +355,7 @@ div.labelfilterlist {
   font-style: normal;
   font-weight: normal;
   font-size: 13px;
+  overflow: hidden;
 }
 
 .diary-draft-button {

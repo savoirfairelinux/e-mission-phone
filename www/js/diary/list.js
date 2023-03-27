@@ -322,6 +322,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       if ($ionicScrollDelegate.getScrollPosition().top < 20) {
        readAndUpdateForDay(Timeline.data.currDay);
        $scope.setSurvey();
+       $scope.currentLanguage = $translate.use();
        $scope.$broadcast('invalidateSize');
       }
     };
@@ -480,10 +481,11 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       var options = [];
       // translate options.
       // Would be nicer not to do this everytime function is called
+      const language = $translate.use();
       $scope.inputParams[inputType].options.forEach( (item) => {
         options.push( {
-          "text": $translate.instant(item.text),
-          "value": item.value
+          "text": item.texts[language] || item.texts?.["en"],
+          "value": item.value,
         });
       })
 
@@ -679,4 +681,11 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       $scope.config = config;
       $scope.setSurvey();
     });
+
+    $scope.currentLanguage = $translate.use();
+    $rootScope.$on("$translateChangeSuccess", () => {
+      $scope.setSurvey();
+      $scope.currentLanguage = $translate.use();
+      $scope.$broadcast('invalidateSize');
+    })
 });
