@@ -66,7 +66,6 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
                             "clientID": "ignored"
                         }
                     },
-                    "creationTime": new Date(), // Is it really related to the config? Not sure. At least it is convenient.
                     "downloadUrl": downloadUrl,
                 };
                 resolve(config);

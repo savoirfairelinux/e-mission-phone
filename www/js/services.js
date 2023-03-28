@@ -607,6 +607,28 @@ angular.module('emission.services', ['emission.plugin.logger',
   };
 })
 
+.service('UserCacheHelper', function($window){
+
+  const USER_PROFILE_EMAIL_KEY = 'userprofile/email';
+  const USER_PROFILE_CREATE_TIME_KEY = 'userprofile/creationtime';
+
+  this.setEmail = function(email) {
+    localStorage.setItem(USER_PROFILE_EMAIL_KEY, email);
+  }
+
+  this.getEmail = function() {
+    return localStorage.getItem(USER_PROFILE_EMAIL_KEY);
+  }
+
+  this.setCreationTime = function(time) {
+    localStorage.setItem(USER_PROFILE_CREATE_TIME_KEY, JSON.stringify(time));
+  }
+
+  this.getCreationTime = function() {
+    return JSON.parse(localStorage.getItem(USER_PROFILE_CREATE_TIME_KEY));
+  }
+})
+
 // common configuration methods across all screens
 // e.g. maps
 // for consistent L&F

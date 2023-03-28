@@ -7,6 +7,7 @@ angular
     'emission.appstatus.permissioncheck',
     "emission.i18n.utils",
     'emission.config.dynamic',
+    'emission.services',
     "ionic-toast",
   ])
 
@@ -45,6 +46,7 @@ angular
       $translate,
       i18nUtils,
       DynamicConfig,
+      UserCacheHelper,
     ) {
       $scope.setupPermissionText = function () {
         $scope.platform = $window.device.platform;
@@ -363,6 +365,8 @@ angular
               "https://mamobilite.fabmobqc.ca/api/userprofile/",
               options,
               function() {
+                UserCacheHelper.setEmail($scope.email);
+                UserCacheHelper.setCreationTime(new Date());
                 resolve();
               },
               function(error) {
