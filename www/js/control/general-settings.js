@@ -15,6 +15,7 @@ angular
     "emission.stats.clientstats",
     "emission.plugin.kvstore",
     "emission.plugin.logger",
+    "emission.survey.launch",
   ])
 
   .controller(
@@ -47,6 +48,8 @@ angular
       CommHelper,
       Logger,
       $translate,
+      SurveyLaunch,
+      UserCacheHelper,
     ) {
       var datepickerObject = {
         todayLabel: $translate.instant("list-datepicker-today"), //Optional
@@ -139,10 +142,43 @@ angular
       }
 
       $scope.deleteMyData = function ($event) {
-        const url =
-          "https://fabmobqc.ca/nos-donnees-en-mobilite/ma-mobilite/ma-mobilite-suppression-des-donnees/";
-        const options = "location=yes,clearcache=no,toolbar=yes,hideurlbar=yes";
-        $window.cordova.InAppBrowser.open(url, "_blank", options);
+
+        const email = UserCacheHelper.getEmail() || "";
+        const token = $scope.settings.auth.email;
+
+        const parameters = {
+          "en": {
+            url: "https://fabmobqc.ca/en/our-mobility-data/my-mobility/ma-mobilite-delete-my-data/",
+            fillers: [
+              {
+                elementId: "wpforms-26810-field_1",
+                elementValue: email,
+              },
+              {
+                elementId: "wpforms-26810-field_2",
+                elementValue: token,
+              },
+            ],
+          },
+          "fr": {
+            url: "https://fabmobqc.ca/nos-donnees-en-mobilite/ma-mobilite/ma-mobilite-suppression-des-donnees/",
+            fillers: [
+              {
+                elementId: "wpforms-25206-field_1",
+                elementValue: email,
+              },
+              {
+                elementId: "wpforms-25206-field_2",
+                elementValue: token,
+              },
+            ],
+          },
+        };
+
+        const language = $translate.use()
+        const {url, fillers} = parameters[language] || parameters["en"];
+
+        SurveyLaunch.startSurveyPrefilled(url, fillers);
       };
 
       $scope.leaveComment = function ($event) {

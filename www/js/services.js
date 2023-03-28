@@ -617,7 +617,8 @@ angular.module('emission.services', ['emission.plugin.logger',
   }
 
   this.getEmail = function() {
-    return localStorage.getItem(USER_PROFILE_EMAIL_KEY);
+    const email = localStorage.getItem(USER_PROFILE_EMAIL_KEY);
+    return email === "null" ? null : email; // Why??
   }
 
   this.setCreationTime = function(time) {
