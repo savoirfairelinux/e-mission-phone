@@ -25,7 +25,9 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                     $ionicActionSheet,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
-    Config, PostTripManualMarker, ConfirmHelper, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $translate, DynamicConfig, CommHelper, SurveyLaunch) {
+    Config, PostTripManualMarker, ConfirmHelper, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $translate, DynamicConfig, CommHelper, SurveyLaunch,
+    UserCacheHelper
+) {
   console.log("controller DiaryListCtrl called");
   // Add option
 
@@ -628,6 +630,9 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       });
     });
 
+
+    $scope.email = UserCacheHelper.getEmail()
+    $scope.creationTime = UserCacheHelper.getCreationTime();
     $scope.config = null;
     $scope.survey = null;
 
@@ -645,7 +650,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       }
 
       // Find the survey for the day of the diary
-      const subscriptionMoment = moment($scope.config.creationTime);
+      const subscriptionMoment = moment($scope.creationTime);
       const dayOfStudy = diaryMoment.diff(subscriptionMoment, "days");
       const dailyForms = $scope.config.daily_forms;
       $scope.survey = dailyForms.find(({is_active, day}) => is_active && day === dayOfStudy);
