@@ -641,6 +641,14 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         return;
       }
 
+      const configTimezone = $scope.config.timezone;
+
+      const getDateInConfigTimezone = (momentToConvert) => {
+        const formatting = "YYYY-MM-DD";
+        const dateString = momentToConvert.tz(configTimezone).format(formatting);
+        return moment(dateString, formatting);
+      }
+
       const currentMoment = new moment();
       const diaryMoment = moment(Timeline.data.currDay);
 
@@ -649,14 +657,18 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         return;
       }
 
+      const diaryDate = getDateInConfigTimezone(diaryMoment);
+
       // Find the survey for the day of the diary
       const subscriptionMoment = moment($scope.creationTime);
-      const dayOfStudy = diaryMoment.diff(subscriptionMoment, "days");
+      const subscriptionDate = getDateInConfigTimezone(subscriptionMoment);
+      const dayOfStudy = diaryDate.diff(subscriptionDate, "days");
       const dailyForms = $scope.config.daily_forms;
       $scope.survey = dailyForms.find(({is_active, day}) => is_active && day === dayOfStudy);
 
       // Check if it is too soon to display the survey
-      const sameDay = currentMoment.diff(diaryMoment, "days") === 0;
+      const currentDate = getDateInConfigTimezone(currentMoment);
+      const sameDay = currentDate.diff(diaryDate, "days") === 0;
       if (sameDay) {
         if (currentMoment.tz($scope.config.timezone).format("HH:mm:ss") < $scope.survey.display_time) {
           $scope.survey = null;
@@ -676,10 +688,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         return;
       }
 
-      CommHelper.getUser().then(function (userProfile) {
-        const uuid = userProfile.user_id["$uuid"];
-        SurveyLaunch.startSurvey(surveyUrl.url + `?uuid=${uuid}`);
-      });
+      const queryString = `?email=${$scope.email}&date=${$scope.creationTime}`;
+      SurveyLaunch.startSurvey(surveyUrl.url + queryString);
     };
 
     DynamicConfig.loadSavedConfig().then((config) => {
