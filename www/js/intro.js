@@ -299,12 +299,15 @@ angular
                   UpdateCheck.getChannel().then(function (retVal) {
                     CommHelper.updateUser({
                       client: retVal,
+                      creation_ts: new moment(),
+                      project_id: $scope.selectedStudy.id,
+                      email: $scope.email, // we might want not to have email on e-mission-server in order to anonymize data
                     });
                   });
                   if (!$scope.selectedStudy.user_email_mandatory) {
                     $scope.startSurvey();
                   }
-                  $scope.saveUserProfileOnServer()
+                  $scope.saveUserProfileOnServer() // do we still want to do this if e-mission-server receives the email?
                   .then(() => {
                     $scope.finish();
                   });
