@@ -681,14 +681,25 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         return;
       }
 
-      const appLanguage = $translate.use() || 'en';
+      const appLanguage = $translate.use();
       const surveyUrl = $scope.survey.urls.find(({language}) => language === appLanguage) || $scope.survey.urls[0];
 
       if (!surveyUrl) {
         return;
       }
+      
+      const formattings = {
+        "fr": "DD/MM/YYYY",
+        "en": "MMMM Do YYYY",
+      };
 
-      const queryString = `?email=${$scope.email}&date=${$scope.creationTime}`;
+      const formatting = formattings[appLanguage] || formattings["en"];
+
+      const configTimezone = $scope.config.timezone;
+      const diaryMoment = moment(Timeline.data.currDay);
+      const formattedTripDate = diaryMoment.tz(configTimezone).format(formatting);
+
+      const queryString = `?user_email=${$scope.email}&trip_date=${formattedTripDate}`;
       SurveyLaunch.startSurvey(surveyUrl.url + queryString);
     };
 
