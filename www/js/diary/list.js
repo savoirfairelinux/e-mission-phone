@@ -666,6 +666,10 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       const dailyForms = $scope.config.daily_forms;
       $scope.survey = dailyForms.find(({is_active, day}) => is_active && day === dayOfStudy);
 
+      if (!$scope.survey) {
+        return
+      }
+
       // Check if it is too soon to display the survey
       const currentDate = getDateInConfigTimezone(currentMoment);
       const sameDay = currentDate.diff(diaryDate, "days") === 0;
