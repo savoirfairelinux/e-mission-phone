@@ -99,11 +99,6 @@ angular
       var allIntroFiles = Promise.all([
         i18nUtils.geti18nFileName("templates/", "intro/summary", ".html"),
         i18nUtils.geti18nFileName("templates/", "intro/consent", ".html"),
-        i18nUtils.geti18nFileName(
-          "templates/",
-          "intro/sensor_explanation",
-          ".html"
-        ),
         i18nUtils.geti18nFileName("templates/", "intro/login", ".html"),
       ]);
       allIntroFiles.then(function (allIntroFilePaths) {
@@ -111,8 +106,8 @@ angular
           console.log("intro files are " + allIntroFilePaths);
           $scope.summaryFile = allIntroFilePaths[0];
           $scope.consentFile = allIntroFilePaths[1];
-          $scope.explainFile = allIntroFilePaths[2];
-          $scope.loginFile = allIntroFilePaths[3];
+          $scope.explainFile = "templates/intro/sensor_explanation.html";
+          $scope.loginFile = allIntroFilePaths[2];
           $scope.joinFile = "templates/intro/request_join.html";
         });
       });
