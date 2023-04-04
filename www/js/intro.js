@@ -160,17 +160,6 @@ angular
         $scope.getIntroBox().previous();
       };
 
-      $scope.agree = function () {
-        StartPrefs.markConsented().then(function (response) {
-          $ionicHistory.clearHistory();
-          if ($state.is("root.intro")) {
-            $scope.next();
-          } else {
-            StartPrefs.loadPreferredScreen();
-          }
-        });
-      };
-
       $scope.startSurvey = function () {
         const frenchForm = {
           userIdElementId: "wpforms-25100-field_14",
@@ -337,9 +326,14 @@ angular
 
       $scope.finish = function () {
         // this is not a promise, so we don't need to use .then
-        StartPrefs.markIntroDone();
-        $scope.getIntroBox().slide(0);
-        StartPrefs.loadPreferredScreen();
+        console.log("cossin finish")
+        StartPrefs.markConsented().then(function (response) {
+          console.log("cossin markConsented")
+          $ionicHistory.clearHistory();
+          StartPrefs.markIntroDone();
+          $scope.getIntroBox().slide(0);
+          StartPrefs.loadPreferredScreen();
+        })
       };
 
       $scope.saveUserProfileOnServer = function() {
