@@ -6,9 +6,10 @@
  */
 
 angular.module('emission.splash.localnotify', ['emission.plugin.logger',
-                                              'emission.splash.startprefs'])
+                                              'emission.splash.startprefs',
+                                              'emission.services'])
 .factory('LocalNotify', function($window, $ionicPlatform, $ionicPopup,
-    $state, $rootScope, Logger) {
+    $state, $rootScope, Logger, $translate, UserCacheHelper) {
   var localNotify = {};
 
   /*
@@ -88,6 +89,55 @@ angular.module('emission.splash.localnotify', ['emission.plugin.logger',
     });
     $window.cordova.plugins.notification.local.on('click', function (notification, state, data) {
       localNotify.handleNotification(notification, state, data);
+    });
+  }
+
+
+  function scheduleNotification(notification, currentMoment, displayMoment) {
+
+    if (currentMoment.isAfter(displayMoment)) {
+      return;
+    }
+
+    const language = $translate.use();
+    const titles = notification.titles;
+    const title = titles.find((title) => title.language === language) || titles[0]
+
+    const messages = notification.messages;
+    const message = messages.find((message) => message.language === language) || messages[0]
+
+    $window.cordova.plugins.notification.local.schedule({
+      id: notification.id,
+      title: title.title,
+      text: message.body,
+      trigger: { at: displayMoment.toDate() }
+    });
+  }
+  
+  localNotify.setNotifications = function(config) {
+    // We're not sure whether old notifications are still active or not
+    // We might also want someday to update the config and remove notifications
+    $window.cordova.plugins.notification.local.cancelAll();
+
+    const rawCreationTime = UserCacheHelper.getCreationTime();
+    const creationMoment = rawCreationTime ? moment(rawCreationTime) : new moment();
+    const currentMoment = new moment();
+
+    const onInstallNotifications = config.on_install_notifications;
+    onInstallNotifications.forEach((notification) => {
+      const displayMoment = creationMoment.add(notification.delay, notification.delay_unit)
+      scheduleNotification(notification, currentMoment, displayMoment);
+    })
+
+
+    const configTimezone = config.timezone;
+    const creationDate = creationMoment.tz(configTimezone).startOf('day'); // setting to 00:00 in config's timezone
+    const dailyNotifications = config.daily_notifications;
+    dailyNotifications.forEach((notification) => {
+      const creationDateClone = moment(creationDate); // moments are mutable
+      const displayTime = moment.duration(notification.display_time)
+      const displayMoment = creationDateClone.add(notification.day, "days").add(displayTime);
+      scheduleNotification(notification, currentMoment, displayMoment);
     });
   }
 
