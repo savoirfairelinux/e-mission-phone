@@ -321,9 +321,7 @@ angular
 
       $scope.finish = function () {
         // this is not a promise, so we don't need to use .then
-        console.log("cossin finish")
         StartPrefs.markConsented().then(function (response) {
-          console.log("cossin markConsented")
           $ionicHistory.clearHistory();
           StartPrefs.markIntroDone();
           $scope.getIntroBox().slide(0);

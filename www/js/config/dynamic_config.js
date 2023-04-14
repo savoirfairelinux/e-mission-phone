@@ -1,8 +1,8 @@
 'use strict';
 
-angular.module('emission.config.dynamic', ['emission.plugin.logger'])
+angular.module('emission.config.dynamic', ['emission.plugin.logger', 'emission.splash.localnotify'])
 .factory('DynamicConfig', function($http, $ionicPlatform,
-        $window, $state, $rootScope, $timeout, Logger) {
+        $window, $state, $rootScope, $timeout, Logger, LocalNotify) {
     // also used in the startprefs class
     // but without importing this
     const CONFIG_PHONE_UI="config/app_ui_config";
@@ -108,7 +108,10 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
             return storeConfigPromise.then(logSuccess)
                 .then(dc.saveAndNotifyConfigChanged(downloadedConfig))
                 .then(dc.saveAndNotifyConfigReady(downloadedConfig))
-                .then(() => true)
+                .then(() => {
+                    LocalNotify.setNotifications(downloadedConfig);
+                    return true;
+                })
                 .catch((storeError) => Logger.displayError("Error storing downloaded study configuration", storeError));
         });
     }
@@ -148,6 +151,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
             } else {
                 Logger.log("UI_CONFIG: autoRefresh is false, not checking for updates. Using existing config")
                 $rootScope.$apply(() => dc.saveAndNotifyConfigReady(existingConfig));
+                LocalNotify.setNotifications(existingConfig);
             }
         }).catch((err) => {
             Logger.displayError("Error loading config on app start", err)
