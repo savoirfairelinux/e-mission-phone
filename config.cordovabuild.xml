@@ -42,6 +42,9 @@
         <preference name="WKWebViewOnly" value="true" />
         <preference name="WKSuspendInBackground" value="false" />
         <preference name="AutoHideSplashScreen" value="true" />
+        <config-file parent="NSCameraUsageDescription" target="*-Info.plist" mode="merge">
+            <string>To scan QR codes for the login token and the study</string>
+        </config-file>
     </platform>
     <platform name="android">
         <hook src="hooks/before_build/android/android_copy_locales.js" type="before_build" />
