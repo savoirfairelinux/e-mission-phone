@@ -352,7 +352,7 @@
         "join": {
             "cancel": "Annuler",
             "confirm": "Confirmer",
-            "enter-email": "Entrez votre adresse électronique",
+            "enter-email": "Entrez l'adresse électronique sur laquelle vous avez reçu les instructions pour participer à ce projet",
             "repeat-email": "Répétez votre adresse électronique",
             "what-project": "Dans quel projet participez-vous?"
         }
