@@ -152,7 +152,8 @@
         "select-replaced-mode-scroll": "Replacés (👇 pour plus)",
         "select-purpose-scroll": "Motif (👇 pour plus)",
         "list-pick-a-date": "Date",
-        "link-to-daily-survey": "Lien vers le questionnaire"
+        "daily-survey-for-day": "Questionnaire pour le jour {{dayOfStudy}}",
+        "daily-survey-last": "Dernier questionnaire"
     },
     "modes": {
         "walk": "Marche à pied",

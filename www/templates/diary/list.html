@@ -26,10 +26,12 @@
       </button>
     </div>
 
+
     <div style="text-align:center;">
-      <button class="daily-survey-button" ng-if="!!survey" ng-click="startSurvey()">
-        <span translate>{{'.link-to-daily-survey'}}</span>
-      </button>
+        <button class="daily-survey-button" ng-if="!!survey" ng-click="startSurvey()" ng-switch on="isLastDailySurvey">
+          <span ng-switch-when="true" translate=".daily-survey-last"></span>
+          <span ng-switch-default translate=".daily-survey-for-day" translate-values="{dayOfStudy: dayOfStudy}"> </span>
+        </button>
     </div>
 
 		<ion-list>

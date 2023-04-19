@@ -154,7 +154,8 @@
         "select-replaced-mode-scroll": "Replaces (👇 for more)",
         "select-purpose-scroll": "Purpose (👇 for more)",
         "list-pick-a-date": "Pick a date",
-        "link-to-daily-survey": "Link to daily survey"
+        "daily-survey-for-day": "Day {{dayOfStudy}} daily survey",
+        "daily-survey-last": "Last daily survey"
     },
     "modes": {
         "walk": "Walk",
