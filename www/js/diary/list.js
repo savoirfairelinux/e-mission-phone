@@ -635,6 +635,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.creationTime = UserCacheHelper.getCreationTime();
     $scope.config = null;
     $scope.survey = null;
+    $scope.dayOfStudy = null;
+    $scope.lastDailySurveyday = -1;
 
     $scope.setSurvey = function() {
       if(!$scope.config || !Timeline.data.currDay) {
@@ -662,10 +664,9 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       // Find the survey for the day of the diary
       const subscriptionMoment = moment($scope.creationTime);
       const subscriptionDate = getDateInConfigTimezone(subscriptionMoment);
-      const dayOfStudy = diaryDate.diff(subscriptionDate, "days");
+      $scope.dayOfStudy = diaryDate.diff(subscriptionDate, "days");
       const dailyForms = $scope.config.daily_forms;
-      $scope.survey = dailyForms.find(({is_active, day}) => is_active && day === dayOfStudy);
-
+      $scope.survey = dailyForms.find(({is_active, day}) => is_active && day === $scope.dayOfStudy);
       if (!$scope.survey) {
         return
       }
@@ -678,6 +679,12 @@ angular.module('emission.main.diary.list',['ui-leaflet',
           $scope.survey = null;
         }
       }
+
+      const lastDailySurveyday = dailyForms.reduce(
+        (previousValue, currentValue) => currentValue > previousValue ? currentValue : previousValue
+        , 0
+      );
+      $scope.isLastDailySurvey = lastDailySurveyday === $scope.dayOfStudy
     }
 
     $scope.startSurvey = function () {
