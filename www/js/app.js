@@ -11,8 +11,9 @@ angular.module('emission', ['ionic',
     'emission.controllers','emission.services', 'emission.plugin.logger',
     'emission.splash.customURLScheme', 'emission.splash.referral',
     'emission.services.email',
-    'emission.intro', 'emission.main', 'emission.config.dynamic',
-    'emission.config.server_conn', 'pascalprecht.translate'])
+    'emission.intro', 'emission.main',
+    'emission.config.dynamic', 'emission.config.server_conn',
+    'pascalprecht.translate'])
 
 .run(function($ionicPlatform, $rootScope, $http, Logger,
     CustomURLScheme, ReferralHandler, DynamicConfig, ServerConnConfig) {
@@ -86,15 +87,7 @@ angular.module('emission', ['ionic',
     .useStaticFilesLoader({
       prefix: 'i18n/',
       suffix: '.json'
-    })
-    .useLocalStorage();
+    });
   
   console.log("Ending config");
-
-  
-  // Tell the module what language to use by default
-  // $translateProvider.preferredLanguage('en');
-
-  // Tell the module to store the language in the cookie
-  // $translateProvider.useCookieStorage();
 });
