@@ -799,5 +799,7 @@ angular
       $scope.selectCtrl = {};
 
       $scope.selectCtrl.language = null;
+
+      $scope.appVersion = ClientStats.getAppVersion();
     }
   );
