@@ -681,7 +681,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       }
 
       const lastDailySurveyday = dailyForms.reduce(
-        (previousValue, currentValue) => currentValue > previousValue ? currentValue : previousValue
+        (previousValue, {is_active, day}) => (is_active && day > previousValue) ? day : previousValue
         , 0
       );
       $scope.isLastDailySurvey = lastDailySurveyday === $scope.dayOfStudy
